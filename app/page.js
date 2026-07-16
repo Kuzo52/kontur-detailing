@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 const services = [
   {
@@ -61,138 +60,80 @@ function ArrowIcon() {
   );
 }
 
-function ComparisonSlider() {
-  const [sliderPosition, setSliderPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const containerRef = useRef(null);
-  const touchStartRef = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return undefined;
-
-    const updateWidth = () => setContainerWidth(container.getBoundingClientRect().width);
-    updateWidth();
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
-
-  const updatePosition = useCallback((clientX) => {
-    const container = containerRef.current;
-    if (!container || !Number.isFinite(clientX)) return;
-
-    const rect = container.getBoundingClientRect();
-    if (rect.width <= 0) return;
-
-    const position = ((clientX - rect.left) / rect.width) * 100;
-    setSliderPosition(Math.min(100, Math.max(0, position)));
-  }, []);
-
-  const handleMouseMove = (event) => {
-    if (isDragging) updatePosition(event.clientX);
-  };
-
-  const handleTouchStart = (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-    setIsDragging(true);
-    updatePosition(touch.clientX);
-  };
-
-  const handleTouchMove = (event) => {
-    if (!isDragging) return;
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
-    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-    if (deltaX > deltaY && event.cancelable) event.preventDefault();
-    updatePosition(touch.clientX);
-  };
-
-  const finishDragging = () => setIsDragging(false);
+function ObsessionTimeline() {
+  const steps = [
+    {
+      number: "01",
+      title: "Деконтаминация",
+      description:
+        "Многоэтапный детокс кузова. Деликатная ручная мойка pH-нейтральными составами, удаление битума и металлических вкраплений колодочной пыли, очистка пор лака импортной глиной.",
+      image:
+        "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80",
+      alt: "Деликатная ручная мойка кузова активной пеной",
+    },
+    {
+      number: "02",
+      title: "Микрохирургия ЛКП",
+      description:
+        "Поэтапная коррекция лака под инспекционным светом Scangrip. Обязательная толщинометрия и индивидуальный подбор связки кругов и паст. Корректируем до 95% видимых дефектов в пределах безопасной толщины лака.",
+      image:
+        "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80",
+      alt: "Коррекция лакокрасочного покрытия полировальной машиной",
+    },
+    {
+      number: "03",
+      title: "Кварцевая броня",
+      description:
+        "Нанесение многослойной керамики 9H. Состав связывается с лаком, создавая зеркальный «мокрый» глянец, выраженный гидрофобный эффект и стойкость к дорожной химии.",
+      image:
+        "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80",
+      alt: "Гидрофобный эффект керамической защиты кузова",
+    },
+  ];
 
   return (
-    <figure
-      ref={containerRef}
-      className="comparison-slider relative mx-auto aspect-[16/10] w-full max-w-4xl cursor-ew-resize select-none overflow-hidden rounded-2xl border border-white/[0.05] bg-[#11110f]"
-      onMouseDown={(event) => {
-        setIsDragging(true);
-        updatePosition(event.clientX);
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={finishDragging}
-      onMouseLeave={finishDragging}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={finishDragging}
-      onTouchCancel={finishDragging}
-      role="slider"
-      aria-label="Сравнение автомобильной фары до и после глубокой полировки"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(sliderPosition)}
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === "ArrowLeft") setSliderPosition((value) => Math.max(0, value - 2));
-        if (event.key === "ArrowRight") setSliderPosition((value) => Math.min(100, value + 2));
-      }}
-    >
-      <span className="absolute inset-0">
-        <img
-          src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
-          alt="Автомобильная фара после глубокой полировки"
-          width="1200"
-          height="900"
-          loading="lazy"
-          draggable="false"
-          className="h-full w-full object-cover"
-        />
-        <span className="absolute right-3 top-3 whitespace-nowrap rounded-full border border-white/[0.05] bg-black/45 px-3 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.15em] text-white/80 backdrop-blur-xl sm:right-4 sm:top-4 sm:text-[0.62rem]">
-          После (Глубокая полировка)
-        </span>
-      </span>
+    <section id="result" className="relative z-10 py-24 md:py-36">
+      <header className="section-shell mb-12 max-w-3xl">
+        <p className="eyebrow mb-4">Протокол работы</p>
+        <h2 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+          Искусство в&nbsp;деталях
+        </h2>
+        <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400">
+          Как мы создаём безупречный результат. Три этапа бескомпромиссной работы.
+        </p>
+      </header>
 
-      <span
-        className="absolute inset-y-0 left-0 overflow-hidden will-change-[width]"
-        style={{ width: `${sliderPosition}%` }}
-      >
-        <img
-          src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
-          alt=""
-          width="1200"
-          height="900"
-          loading="lazy"
-          draggable="false"
-          className="absolute inset-y-0 left-0 h-full max-w-none object-cover"
-          style={{
-            width: containerWidth ? `${containerWidth}px` : "100%",
-            filter: "sepia(0.75) saturate(1.7) contrast(0.8) brightness(0.7) blur(1.5px)",
-          }}
-        />
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-r from-amber-950/30 via-yellow-900/15 to-transparent mix-blend-color-burn" />
-        <span className="absolute left-3 top-3 whitespace-nowrap rounded-full border border-amber-100/[0.06] bg-[#17130d]/55 px-3 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.15em] text-amber-50/75 backdrop-blur-xl sm:left-4 sm:top-4 sm:text-[0.62rem]">
-          До (Мутная, жёлтая фара)
-        </span>
-      </span>
-
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 w-px bg-[#C5A880] shadow-[0_0_16px_rgba(197,168,128,0.35)] will-change-[left]"
-        style={{ left: `${sliderPosition}%` }}
-      >
-        <span className="absolute left-1/2 top-1/2 grid size-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#C5A880]/40 bg-[#121210]/90 shadow-[0_10px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
-          <span className="relative h-3.5 w-3.5">
-            <span className="absolute left-0 top-1/2 h-px w-1.5 -translate-y-1/2 bg-[#C5A880]" />
-            <span className="absolute right-0 top-1/2 h-px w-1.5 -translate-y-1/2 bg-[#C5A880]" />
-          </span>
-        </span>
-      </span>
-    </figure>
+      <section className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 md:grid md:grid-cols-3 md:gap-8 md:px-4">
+        {steps.map((step) => (
+          <article
+            key={step.number}
+            className="group relative aspect-[4/5] w-[85vw] flex-shrink-0 cursor-pointer snap-center overflow-hidden rounded-3xl border border-white/[0.05] bg-neutral-950 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:w-full"
+          >
+            <img
+              src={step.image}
+              alt={step.alt}
+              width="800"
+              height="1000"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+            />
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/80 to-black/40 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-90"
+            />
+            <section className="absolute inset-0 z-20 flex flex-col justify-between p-8">
+              <span className="text-5xl font-light tracking-widest text-amber-500/90">{step.number}</span>
+              <article>
+                <h3 className="mb-2 mt-auto text-2xl font-medium uppercase tracking-wider text-white">
+                  {step.title}
+                </h3>
+                <p className="text-sm leading-6 text-zinc-300">{step.description}</p>
+              </article>
+            </section>
+          </article>
+        ))}
+      </section>
+    </section>
   );
 }
 
@@ -300,18 +241,7 @@ export default function Home() {
         </section>
       </section>
 
-      <section id="result" className="section-shell relative z-10 py-24 md:py-36">
-        <header className="mb-12 max-w-3xl">
-          <p className="eyebrow mb-4">Оптика · реставрация</p>
-          <h2 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
-            Прозрачность возвращается слоями.
-          </h2>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400">
-            Снимаем разрушенный ультрафиолетом слой, выстраиваем поверхность несколькими градациями абразива и&nbsp;закрываем оптику защитным составом. Потяните бронзовый маркер.
-          </p>
-        </header>
-        <ComparisonSlider />
-      </section>
+      <ObsessionTimeline />
 
       <section id="process" className="section-shell relative z-10 py-28 md:py-40">
         <header className="mb-14 md:max-w-2xl">

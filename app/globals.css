@@ -122,12 +122,6 @@ img {
   width: 100%;
 }
 
-.comparison-slider {
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
 .safe-bottom {
   bottom: max(1rem, env(safe-area-inset-bottom));
 }
