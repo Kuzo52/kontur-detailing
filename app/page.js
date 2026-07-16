@@ -92,18 +92,18 @@ function ObsessionTimeline() {
   ];
 
   return (
-    <section id="result" className="relative z-10 py-24 md:py-36">
-      <header className="section-shell mb-12 max-w-3xl">
+    <section id="result" className="relative z-10 py-12 md:py-36">
+      <header className="section-shell mb-8 max-w-3xl md:mb-12">
         <p className="eyebrow mb-4">Протокол работы</p>
         <h2 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
           Искусство в&nbsp;деталях
         </h2>
-        <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400">
+        <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 md:mt-6">
           Как мы создаём безупречный результат. Три этапа бескомпромиссной работы.
         </p>
       </header>
 
-      <section className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 md:grid md:grid-cols-3 md:gap-8 md:px-4">
+      <section className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:grid md:grid-cols-3 md:gap-8 md:px-4 md:pb-6">
         {steps.map((step) => (
           <article
             key={step.number}
@@ -143,7 +143,7 @@ export default function Home() {
   return (
     <main className="main-canvas relative min-h-[100dvh] overflow-hidden bg-[#0F0F0E]">
 
-      <header className="section-shell relative z-20 flex items-center justify-between py-6">
+      <header className="section-shell relative z-20 flex items-center justify-between py-4 md:py-6">
         <a href="#hero" className="text-lg font-black tracking-[0.24em] text-white" aria-label="KONTUR — на главную">
           KONTUR
         </a>
@@ -157,16 +157,16 @@ export default function Home() {
         </ActionLink>
       </header>
 
-      <section id="hero" className="section-shell relative z-10 grid min-h-[calc(100dvh-96px)] items-center gap-12 pb-24 pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
+      <section id="hero" className="section-shell relative z-10 grid items-center gap-8 pb-14 pt-8 md:min-h-[calc(100dvh-96px)] md:gap-12 md:pb-24 md:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <article className="max-w-3xl">
-          <p className="eyebrow mb-6">Студия детейлинга · Москва</p>
+          <p className="eyebrow mb-4 md:mb-6">Студия детейлинга · Москва</p>
           <h1 className="text-balance text-[clamp(3rem,8vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-white">
             Сохраняем заводской характер автомобиля.
           </h1>
-          <p className="mt-8 max-w-2xl text-pretty text-base leading-7 text-[#A1A1AA] md:text-lg md:leading-8">
+          <p className="mt-6 max-w-2xl text-pretty text-base leading-7 text-[#A1A1AA] md:mt-8 md:text-lg md:leading-8">
             Исправляем дефекты лака, защищаем кузов и&nbsp;возвращаем салону исходную фактуру. Работаем точно: от&nbsp;замера толщины покрытия до&nbsp;финальной приёмки под проявочным светом.
           </p>
-          <footer className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <footer className="mt-8 flex flex-col gap-3 md:mt-10 sm:flex-row">
             <ActionLink href="#contact" className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.22)] hover:bg-[#D0B893]">
               Рассчитать стоимость <ArrowIcon />
             </ActionLink>
@@ -193,22 +193,22 @@ export default function Home() {
         </figure>
       </section>
 
-      <section aria-label="Показатели студии" className="section-shell relative z-10 grid grid-cols-2 justify-items-center border-y border-white/[0.05] py-8 md:grid-cols-4">
+      <section aria-label="Показатели студии" className="section-shell relative z-10 grid grid-cols-2 justify-items-center border-y border-white/[0.05] py-4 md:grid-cols-4 md:py-8">
         {[
           ["7+", "лет работы"],
           ["1 200+", "кузовов принято"],
           ["9H", "твёрдость защиты"],
           ["3 года", "гарантия на состав"],
         ].map(([value, label]) => (
-          <article key={label} className="flex w-full flex-col items-center justify-center border-white/[0.05] px-3 py-5 text-center even:border-l md:border-l md:first:border-l-0">
+          <article key={label} className="flex w-full flex-col items-center justify-center border-white/[0.05] px-3 py-4 text-center even:border-l md:border-l md:py-5 md:first:border-l-0">
             <strong className="block text-center text-2xl font-semibold tracking-[0.04em] text-white md:text-3xl">{value}</strong>
             <span className="mt-2 block text-center text-[0.62rem] uppercase tracking-[0.15em] text-zinc-500">{label}</span>
           </article>
         ))}
       </section>
 
-      <section id="services" className="relative z-10 py-28 md:py-40">
-        <header className="section-shell mb-12 grid gap-6 md:grid-cols-2 md:items-end">
+      <section id="services" className="relative z-10 py-16 md:py-40">
+        <header className="section-shell mb-8 grid gap-4 md:mb-12 md:grid-cols-2 md:items-end md:gap-6">
           <article>
             <p className="eyebrow mb-4">Работа по материалу</p>
             <h2 className="max-w-xl text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
@@ -243,14 +243,14 @@ export default function Home() {
 
       <ObsessionTimeline />
 
-      <section id="process" className="section-shell relative z-10 py-28 md:py-40">
-        <header className="mb-14 md:max-w-2xl">
+      <section id="process" className="section-shell relative z-10 py-16 md:py-40">
+        <header className="mb-8 md:mb-14 md:max-w-2xl">
           <p className="eyebrow mb-4">Протокол KONTUR</p>
           <h2 className="text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">Каждый проход имеет причину.</h2>
         </header>
         <section className="grid border-t border-white/[0.05] md:grid-cols-2">
           {processSteps.map(([title, text], index) => (
-            <article key={title} className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/[0.05] py-8 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r">
+            <article key={title} className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/[0.05] py-6 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r">
               <span className="font-mono text-xs text-[#C5A880]">0{index + 1}</span>
               <section>
                 <h3 className="text-xl font-medium text-white">{title}</h3>
@@ -261,16 +261,16 @@ export default function Home() {
         </section>
       </section>
 
-      <section id="contact" className="section-shell relative z-10 pb-36 pt-20 md:pb-44">
-        <article className="relative overflow-hidden rounded-[24px] border border-white/[0.05] bg-[radial-gradient(circle_at_85%_10%,rgba(197,168,128,0.09),transparent_32%),#171612] px-6 py-14 shadow-[0_24px_70px_rgba(0,0,0,0.2)] md:px-14 md:py-20">
-          <p className="eyebrow mb-5">Разбор задачи</p>
+      <section id="contact" className="section-shell relative z-10 pb-28 pt-12 md:pb-44 md:pt-20">
+        <article className="relative overflow-hidden rounded-[24px] border border-white/[0.05] bg-[radial-gradient(circle_at_85%_10%,rgba(197,168,128,0.09),transparent_32%),#171612] px-6 py-10 shadow-[0_24px_70px_rgba(0,0,0,0.2)] md:px-14 md:py-20">
+          <p className="eyebrow mb-4 md:mb-5">Разбор задачи</p>
           <h2 className="relative max-w-4xl text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
             Сначала смотрим автомобиль. Потом называем цену.
           </h2>
-          <p className="relative mt-6 max-w-2xl text-base leading-7 text-zinc-400">
+          <p className="relative mt-4 max-w-2xl text-base leading-7 text-zinc-400 md:mt-6">
             Напишите марку, модель и&nbsp;что именно вас беспокоит. По фотографиям обозначим диапазон стоимости, а&nbsp;окончательную технологию зафиксируем после очной диагностики.
           </p>
-          <footer className="relative mt-10 flex flex-col gap-3 sm:flex-row">
+          <footer className="relative mt-8 flex flex-col gap-3 md:mt-10 sm:flex-row">
             <ActionLink
               href="mailto:hello@kontur-detailing.ru?subject=Запись%20на%20диагностику%20KONTUR"
               className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.2)] hover:bg-[#D0B893]"
@@ -284,7 +284,7 @@ export default function Home() {
         </article>
       </section>
 
-      <footer className="section-shell relative z-10 grid gap-10 border-t border-white/[0.05] pb-32 pt-10 text-sm text-zinc-500 md:grid-cols-[1.4fr_1fr_1fr] md:pb-12">
+      <footer className="section-shell relative z-10 grid gap-8 border-t border-white/[0.05] pb-24 pt-8 text-sm text-zinc-500 md:grid-cols-[1.4fr_1fr_1fr] md:gap-10 md:pb-12 md:pt-10">
         <section>
           <strong className="text-base font-black tracking-[0.24em] text-white">KONTUR</strong>
           <p className="mt-4 max-w-sm leading-6">Полировка, защита кузова и&nbsp;реставрация салона с&nbsp;контролем материала на каждом этапе.</p>
