@@ -66,6 +66,7 @@ function ComparisonSlider() {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const reduceMotion = useReducedMotion();
 
   const updatePosition = useCallback((clientX) => {
     const container = containerRef.current;
@@ -131,17 +132,18 @@ function ComparisonSlider() {
     >
       <span className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1200&q=80"
-          alt="Кузов автомобиля до детейлинг-обработки"
+          src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
+          alt="Помутневшая автомобильная фара до глубокой полировки"
           width="1200"
           height="900"
           loading="lazy"
-          className="h-full w-full object-cover filter contrast-75 brightness-90 saturate-50 sepia-[15%] blur-[0.4px]"
+          className="h-full w-full object-cover"
+          style={{ filter: "sepia(0.65) saturate(1.5) contrast(0.8) brightness(0.75) blur(1.8px)" }}
         />
-        <span aria-hidden="true" className="absolute inset-0 bg-white/5 backdrop-brightness-95" />
+        <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-tr from-amber-950/20 via-yellow-900/10 to-transparent mix-blend-multiply opacity-80" />
       </span>
-      <span className="absolute left-4 top-4 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.18em] backdrop-blur-md">
-        До
+      <span className="absolute left-3 top-3 whitespace-nowrap rounded-full border border-amber-200/10 bg-black/50 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-amber-50/80 backdrop-blur-xl sm:left-4 sm:top-4 sm:text-[0.65rem]">
+        До (Мутная, жёлтая фара)
       </span>
 
       <section
@@ -150,15 +152,22 @@ function ComparisonSlider() {
         style={{ "--clip-right": `${100 - sliderPosition}%` }}
       >
         <img
-          src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
           alt=""
           width="1200"
           height="900"
           loading="lazy"
           className="h-full w-full object-cover"
         />
-        <span className="absolute right-4 top-4 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.18em] backdrop-blur-md">
-          После
+        <motion.span
+          aria-hidden="true"
+          className="absolute -inset-y-1/2 left-0 w-1/5 rotate-[18deg] bg-gradient-to-r from-transparent via-white/25 to-transparent blur-xl"
+          initial={{ x: "-180%" }}
+          animate={reduceMotion ? undefined : { x: ["-180%", "680%"] }}
+          transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 2.4, ease: [0.4, 0, 0.2, 1] }}
+        />
+        <span className="absolute right-3 top-3 whitespace-nowrap rounded-full border border-white/10 bg-black/45 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-white/85 backdrop-blur-xl sm:right-4 sm:top-4 sm:text-[0.65rem]">
+          После (Глубокая полировка)
         </span>
       </section>
 
@@ -256,9 +265,9 @@ export default function Home() {
           ["9H", "твёрдость керамики"],
           ["3 года", "гарантии"],
         ].map(([value, label]) => (
-          <article key={label} className="border-white/[0.07] px-4 py-4 first:pl-0 even:border-l md:border-l md:first:border-l-0">
-            <strong className="block text-2xl font-semibold tracking-tight text-white md:text-3xl">{value}</strong>
-            <span className="mt-1 block text-xs text-zinc-500">{label}</span>
+          <article key={label} className="flex flex-col items-center justify-center border-white/[0.07] px-3 py-4 text-center even:border-l md:border-l md:first:border-l-0">
+            <strong className="block text-center text-2xl font-semibold tracking-tight text-white md:text-3xl">{value}</strong>
+            <span className="mt-1 block text-center text-xs text-zinc-500">{label}</span>
           </article>
         ))}
       </section>
