@@ -129,21 +129,24 @@ function ComparisonSlider() {
         if (event.key === "ArrowRight") setSliderPosition((value) => Math.min(100, value + 2));
       }}
     >
-      <img
-        src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
-        alt="Кузов автомобиля до детейлинг-обработки"
-        width="1200"
-        height="900"
-        loading="lazy"
-        className="h-full w-full object-cover"
-      />
+      <span className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1200&q=80"
+          alt="Кузов автомобиля до детейлинг-обработки"
+          width="1200"
+          height="900"
+          loading="lazy"
+          className="h-full w-full object-cover filter contrast-75 brightness-90 saturate-50 sepia-[15%] blur-[0.4px]"
+        />
+        <span aria-hidden="true" className="absolute inset-0 bg-white/5 backdrop-brightness-95" />
+      </span>
       <span className="absolute left-4 top-4 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.18em] backdrop-blur-md">
         До
       </span>
 
       <section
         aria-hidden="true"
-        className="comparison-mask absolute inset-0"
+        className="comparison-mask absolute inset-0 will-change-[clip-path]"
         style={{ "--clip-right": `${100 - sliderPosition}%` }}
       >
         <img
