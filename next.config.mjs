@@ -7,6 +7,8 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   output: "export",
   outputFileTracingRoot: projectRoot,
+  basePath: "/kontur-detailing",
+  assetPrefix: "/kontur-detailing/",
   images: {
     unoptimized: true,
   },
