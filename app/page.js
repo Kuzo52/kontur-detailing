@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 
 const services = [
   {
@@ -38,6 +38,66 @@ const processSteps = [
 
 const spring = { type: "spring", stiffness: 420, damping: 28 };
 
+function ScrollProgress() {
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 24,
+    mass: 0.25,
+  });
+
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="fixed inset-x-0 top-0 z-[60] h-px origin-left bg-[var(--accent)]"
+      style={{ scaleX: reduceMotion ? scrollYProgress : smoothProgress }}
+    />
+  );
+}
+
+function AnimatedHeading({ children, className, level = 2 }) {
+  const reduceMotion = useReducedMotion();
+  const Heading = level === 1 ? motion.h1 : motion.h2;
+  const words = children.trim().split(/\s+/);
+
+  return (
+    <Heading
+      className={className}
+      aria-label={children}
+      initial={reduceMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.55 }}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: { staggerChildren: 0.055, delayChildren: level === 1 ? 0.08 : 0 },
+        },
+      }}
+    >
+      {words.map((word, index) => (
+        <motion.span
+          key={`${word}-${index}`}
+          aria-hidden="true"
+          className="inline-block"
+          variants={{
+            hidden: { opacity: 0, y: "0.55em", filter: "blur(6px)" },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+              transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] },
+            },
+          }}
+        >
+          {word}
+          {index < words.length - 1 ? "\u00A0" : ""}
+        </motion.span>
+      ))}
+    </Heading>
+  );
+}
+
 function ActionLink({ href, children, className = "", ariaLabel }) {
   return (
     <motion.a
@@ -61,6 +121,7 @@ function ArrowIcon() {
 }
 
 function ObsessionTimeline() {
+  const reduceMotion = useReducedMotion();
   const steps = [
     {
       number: "01",
@@ -95,9 +156,9 @@ function ObsessionTimeline() {
     <section id="result" className="relative z-10 py-12 md:py-36">
       <header className="section-shell mb-8 max-w-3xl md:mb-12">
         <p className="eyebrow mb-4">Протокол работы</p>
-        <h2 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
-          Искусство в&nbsp;деталях
-        </h2>
+        <AnimatedHeading className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[var(--heading)] md:text-5xl">
+          Искусство в деталях
+        </AnimatedHeading>
         <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 md:mt-6">
           Как мы создаём безупречный результат. Три этапа бескомпромиссной работы.
         </p>
@@ -105,8 +166,12 @@ function ObsessionTimeline() {
 
       <section className="scrollbar-none mx-auto flex max-w-6xl snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:grid md:grid-cols-3 md:gap-8 md:px-4 md:pb-6">
         {steps.map((step) => (
-          <article
+          <motion.article
             key={step.number}
+            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, delay: Number(step.number) * 0.07, ease: [0.16, 1, 0.3, 1] }}
             className="group relative aspect-[4/5] w-[85vw] flex-shrink-0 cursor-pointer snap-center overflow-hidden rounded-3xl border border-white/[0.05] bg-neutral-950 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:w-full"
           >
             <img
@@ -122,7 +187,7 @@ function ObsessionTimeline() {
               className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/80 to-black/40 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-90"
             />
             <section className="absolute inset-0 z-20 flex flex-col justify-between p-8">
-              <span className="text-5xl font-light tracking-widest text-amber-500/90">{step.number}</span>
+              <span className="text-5xl font-light tracking-widest text-[var(--accent)]">{step.number}</span>
               <article>
                 <h3 className="mb-2 mt-auto text-2xl font-medium uppercase tracking-wider text-white">
                   {step.title}
@@ -130,7 +195,7 @@ function ObsessionTimeline() {
                 <p className="text-sm leading-6 text-zinc-300">{step.description}</p>
               </article>
             </section>
-          </article>
+          </motion.article>
         ))}
       </section>
     </section>
@@ -141,7 +206,8 @@ export default function Home() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <main className="main-canvas relative min-h-[100dvh] overflow-hidden bg-[#0F0F0E]">
+    <main className="main-canvas relative min-h-[100dvh] overflow-hidden bg-[var(--canvas)]">
+      <ScrollProgress />
 
       <header className="section-shell relative z-20 flex items-center justify-between py-4 md:py-6">
         <a href="#hero" className="text-lg font-black tracking-[0.24em] text-white" aria-label="KONTUR — на главную">
@@ -152,7 +218,7 @@ export default function Home() {
           <a href="#result" className="transition-colors duration-300 ease-out hover:text-white">Результат</a>
           <a href="#process" className="transition-colors duration-300 ease-out hover:text-white">Подход</a>
         </nav>
-        <ActionLink href="#contact" className="border border-white/[0.05] bg-white/[0.03] px-4 hover:border-[#C5A880]/40 hover:bg-[#C5A880]/10">
+        <ActionLink href="#contact" className="border border-white/[0.05] bg-white/[0.03] px-4 hover:border-[#B85C4A]/40 hover:bg-[#B85C4A]/10">
           Записаться
         </ActionLink>
       </header>
@@ -160,14 +226,22 @@ export default function Home() {
       <section id="hero" className="section-shell relative z-10 grid items-center gap-8 pb-14 pt-8 md:min-h-[calc(100dvh-96px)] md:gap-12 md:pb-24 md:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <article className="max-w-3xl">
           <p className="eyebrow mb-4 md:mb-6">Студия детейлинга · Москва</p>
-          <h1 className="text-balance text-[clamp(3rem,8vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-white">
+          <AnimatedHeading
+            level={1}
+            className="text-balance text-[clamp(3rem,8vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-[var(--heading)]"
+          >
             Сохраняем заводской характер автомобиля.
-          </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-base leading-7 text-[#A1A1AA] md:mt-8 md:text-lg md:leading-8">
+          </AnimatedHeading>
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 max-w-2xl text-pretty text-base leading-7 text-[var(--muted)] md:mt-8 md:text-lg md:leading-8"
+          >
             Исправляем дефекты лака, защищаем кузов и&nbsp;возвращаем салону исходную фактуру. Работаем точно: от&nbsp;замера толщины покрытия до&nbsp;финальной приёмки под проявочным светом.
-          </p>
+          </motion.p>
           <footer className="mt-8 flex flex-col gap-3 md:mt-10 sm:flex-row">
-            <ActionLink href="#contact" className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.22)] hover:bg-[#D0B893]">
+            <ActionLink href="#contact" className="gap-3 bg-[#B85C4A] text-[#090D0F] shadow-[0_12px_40px_rgba(184,92,74,0.2)] hover:bg-[#C96A57]">
               Рассчитать стоимость <ArrowIcon />
             </ActionLink>
             <ActionLink href="#result" className="border border-white/[0.05] bg-white/[0.02] text-zinc-200 hover:border-white/15 hover:bg-white/[0.06]">
@@ -188,7 +262,7 @@ export default function Home() {
           />
           <figcaption className="glass absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl px-5 py-4 text-sm">
             <span className="text-zinc-400">Финишная инспекция</span>
-            <strong className="font-medium text-[#C5A880]">Два спектра света</strong>
+            <strong className="font-medium text-[var(--accent)]">Два спектра света</strong>
           </figcaption>
         </figure>
       </section>
@@ -211,9 +285,9 @@ export default function Home() {
         <header className="section-shell mb-8 grid gap-4 md:mb-12 md:grid-cols-2 md:items-end md:gap-6">
           <article>
             <p className="eyebrow mb-4">Работа по материалу</p>
-            <h2 className="max-w-xl text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+            <AnimatedHeading className="max-w-xl text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[var(--heading)] md:text-5xl">
               Четыре точных дисциплины.
-            </h2>
+            </AnimatedHeading>
           </article>
           <p className="max-w-lg text-base leading-7 text-zinc-400 md:justify-self-end">
             Не продаём пакет до&nbsp;осмотра. Сначала определяем толщину лака, состояние пластика и&nbsp;историю ремонта — затем собираем технологию под конкретный автомобиль.
@@ -226,14 +300,17 @@ export default function Home() {
               key={service.number}
               whileHover={reduceMotion ? undefined : { y: -6 }}
               whileTap={{ scale: 0.97 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={spring}
-              className={`service-card glass flex min-h-[22rem] snap-center flex-col rounded-[24px] p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-[#C5A880]/25 hover:bg-[#191816] md:p-8 ${index === 0 ? "lg:col-span-2 lg:min-h-[28rem]" : ""} ${index === 3 ? "lg:col-span-2" : ""}`}
+              className={`service-card glass flex min-h-[22rem] snap-center flex-col rounded-[24px] p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-[#B85C4A]/25 hover:bg-[#111A1E] md:p-8 ${index === 0 ? "lg:col-span-2 lg:min-h-[28rem]" : ""} ${index === 3 ? "lg:col-span-2" : ""}`}
             >
               <header className="flex items-center justify-between">
-                <span className="font-mono text-xs text-[#C5A880]">{service.number}</span>
-                <span className="size-1.5 rounded-full bg-[#C5A880]" />
+                <span className="font-mono text-xs text-[var(--accent)]">{service.number}</span>
+                <span className="size-1.5 rounded-full bg-[var(--accent)]" />
               </header>
-              <h3 className={`mt-auto font-medium uppercase leading-tight tracking-[0.06em] text-[#E8E0D5] ${index === 0 ? "max-w-xl text-3xl md:text-4xl" : "text-xl md:text-2xl"}`}>{service.title}</h3>
+              <h3 className={`mt-auto font-medium uppercase leading-tight tracking-[0.06em] text-[var(--heading)] ${index === 0 ? "max-w-xl text-3xl md:text-4xl" : "text-xl md:text-2xl"}`}>{service.title}</h3>
               <p className="mt-4 text-sm leading-6 text-zinc-400">{service.text}</p>
               <footer className="mt-7 border-t border-white/[0.05] pt-4 text-xs font-medium text-zinc-300">{service.meta}</footer>
             </motion.article>
@@ -246,34 +323,43 @@ export default function Home() {
       <section id="process" className="section-shell relative z-10 py-16 md:py-40">
         <header className="mb-8 md:mb-14 md:max-w-2xl">
           <p className="eyebrow mb-4">Протокол KONTUR</p>
-          <h2 className="text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">Каждый проход имеет причину.</h2>
+          <AnimatedHeading className="text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[var(--heading)] md:text-5xl">
+            Каждый проход имеет причину.
+          </AnimatedHeading>
         </header>
         <section className="grid border-t border-white/[0.05] md:grid-cols-2">
           {processSteps.map(([title, text], index) => (
-            <article key={title} className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/[0.05] py-6 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r">
-              <span className="font-mono text-xs text-[#C5A880]">0{index + 1}</span>
+            <motion.article
+              key={title}
+              initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.62, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/[0.05] py-6 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r"
+            >
+              <span className="font-mono text-xs text-[var(--accent)]">0{index + 1}</span>
               <section>
                 <h3 className="text-xl font-medium text-white">{title}</h3>
                 <p className="mt-3 max-w-md text-sm leading-6 text-zinc-400">{text}</p>
               </section>
-            </article>
+            </motion.article>
           ))}
         </section>
       </section>
 
       <section id="contact" className="section-shell relative z-10 pb-28 pt-12 md:pb-44 md:pt-20">
-        <article className="relative overflow-hidden rounded-[24px] border border-white/[0.05] bg-[radial-gradient(circle_at_85%_10%,rgba(197,168,128,0.09),transparent_32%),#171612] px-6 py-10 shadow-[0_24px_70px_rgba(0,0,0,0.2)] md:px-14 md:py-20">
+        <article className="relative overflow-hidden rounded-[24px] border border-white/[0.05] bg-[radial-gradient(circle_at_85%_10%,rgba(184,92,74,0.1),transparent_32%),#10171A] px-6 py-10 shadow-[0_24px_70px_rgba(0,0,0,0.2)] md:px-14 md:py-20">
           <p className="eyebrow mb-4 md:mb-5">Разбор задачи</p>
-          <h2 className="relative max-w-4xl text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+          <AnimatedHeading className="relative max-w-4xl text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[var(--heading)] md:text-5xl">
             Сначала смотрим автомобиль. Потом называем цену.
-          </h2>
+          </AnimatedHeading>
           <p className="relative mt-4 max-w-2xl text-base leading-7 text-zinc-400 md:mt-6">
             Напишите марку, модель и&nbsp;что именно вас беспокоит. По фотографиям обозначим диапазон стоимости, а&nbsp;окончательную технологию зафиксируем после очной диагностики.
           </p>
           <footer className="relative mt-8 flex flex-col gap-3 md:mt-10 sm:flex-row">
             <ActionLink
               href="mailto:hello@kontur-detailing.ru?subject=Запись%20на%20диагностику%20KONTUR"
-              className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.2)] hover:bg-[#D0B893]"
+              className="gap-3 bg-[#B85C4A] text-[#090D0F] shadow-[0_12px_40px_rgba(184,92,74,0.2)] hover:bg-[#C96A57]"
             >
               Отправить задачу мастеру <ArrowIcon />
             </ActionLink>
@@ -300,7 +386,7 @@ export default function Home() {
         </section>
       </footer>
 
-      <nav aria-label="Мобильная навигация" className="safe-bottom fixed left-1/2 z-50 flex w-[min(calc(100%-2rem),25rem)] -translate-x-1/2 items-center justify-around rounded-full border border-white/5 bg-black/30 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-xl md:hidden">
+      <nav aria-label="Мобильная навигация" className="safe-bottom fixed left-1/2 z-50 flex w-[min(calc(100%-2rem),25rem)] -translate-x-1/2 items-center justify-around rounded-full border border-white/5 bg-[#080C0E]/70 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-xl md:hidden">
         {[
           ["#hero", "Главная"],
           ["#services", "Услуги"],
