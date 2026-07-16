@@ -1,40 +1,40 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const services = [
   {
     number: "01",
     title: "Детейлинг-полировка",
-    text: "Коррекция рисок, голограмм и окисления лака с восстановлением глубины цвета.",
+    text: "Сводим видимые риски к минимуму, сохраняя безопасную толщину лака. Возвращаем чистую геометрию отражения и глубину цвета.",
     meta: "от 18 000 ₽ · 1–2 дня",
   },
   {
     number: "02",
     title: "Керамическая защита 9H",
-    text: "Твёрдое гидрофобное покрытие с выраженным блеском и стойкостью к дорожной химии.",
+    text: "Глубокий мокрый глянец, плотный гидрофоб и защита лака от реагентов, битума и жёсткой дорожной химии.",
     meta: "от 35 000 ₽ · 2 дня",
   },
   {
     number: "03",
     title: "Химчистка и реставрация кожи",
-    text: "Глубокая очистка салона, деликатное восстановление пигмента и защитная консервация.",
+    text: "Реставрация кожи по заводской технологии с подбором оригинального колера, восстановлением фактуры и матового финиша.",
     meta: "от 22 000 ₽ · 1–3 дня",
   },
   {
     number: "04",
     title: "Оклейка полиуретаном",
-    text: "Лекальная защита кузова прозрачной самовосстанавливающейся плёнкой премиального класса.",
+    text: "Закрываем уязвимые зоны по лекалам без ножа на кузове. Плёнка принимает удар и самостоятельно затягивает мелкие риски.",
     meta: "от 95 000 ₽ · 3–5 дней",
   },
 ];
 
 const processSteps = [
-  ["Диагностика", "Осматриваем лакокрасочное покрытие под направленным светом и фиксируем состояние."],
-  ["Точная смета", "Согласовываем состав работ, материалы, стоимость и срок до начала процедуры."],
-  ["Исполнение", "Работаем по технологическим картам и контролируем результат на каждом этапе."],
-  ["Выдача", "Передаём автомобиль с рекомендациями по уходу и гарантией на защитные составы."],
+  ["Световая карта", "Проверяем лак толщиномером и проявочным светом. Отмечаем глубокие риски, сколы и зоны прежнего ремонта."],
+  ["Технологическая карта", "Фиксируем материалы, этапы, цену и срок. Никаких дополнительных работ без согласования."],
+  ["Работа по зонам", "Подбираем связку пасты и круга под конкретный лак. После каждого прохода контролируем остаточную толщину."],
+  ["Приёмка в свете", "Показываем кузов под тёплым и холодным светом, выдаём регламент мойки и гарантийный талон."],
 ];
 
 const spring = { type: "spring", stiffness: 420, damping: 28 };
@@ -64,9 +64,21 @@ function ArrowIcon() {
 function ComparisonSlider() {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const updateWidth = () => setContainerWidth(container.getBoundingClientRect().width);
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   const updatePosition = useCallback((clientX) => {
     const container = containerRef.current;
@@ -107,7 +119,7 @@ function ComparisonSlider() {
   return (
     <figure
       ref={containerRef}
-      className="comparison-slider relative aspect-[4/5] w-full cursor-ew-resize overflow-hidden rounded-[24px] border border-white/10 bg-zinc-900 shadow-[0_32px_100px_rgba(0,0,0,0.45)] md:aspect-[16/9]"
+      className="comparison-slider relative mx-auto aspect-[16/10] w-full max-w-4xl cursor-ew-resize select-none overflow-hidden rounded-2xl border border-white/[0.05] bg-[#11110f]"
       onMouseDown={(event) => {
         setIsDragging(true);
         updatePosition(event.clientX);
@@ -120,7 +132,7 @@ function ComparisonSlider() {
       onTouchEnd={finishDragging}
       onTouchCancel={finishDragging}
       role="slider"
-      aria-label="Сравнение состояния автомобиля до и после детейлинга"
+      aria-label="Сравнение автомобильной фары до и после глубокой полировки"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(sliderPosition)}
@@ -133,23 +145,21 @@ function ComparisonSlider() {
       <span className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
-          alt="Помутневшая автомобильная фара до глубокой полировки"
+          alt="Автомобильная фара после глубокой полировки"
           width="1200"
           height="900"
           loading="lazy"
+          draggable="false"
           className="h-full w-full object-cover"
-          style={{ filter: "sepia(0.65) saturate(1.5) contrast(0.8) brightness(0.75) blur(1.8px)" }}
         />
-        <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-tr from-amber-950/20 via-yellow-900/10 to-transparent mix-blend-multiply opacity-80" />
-      </span>
-      <span className="absolute left-3 top-3 whitespace-nowrap rounded-full border border-amber-200/10 bg-black/50 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-amber-50/80 backdrop-blur-xl sm:left-4 sm:top-4 sm:text-[0.65rem]">
-        До (Мутная, жёлтая фара)
+        <span className="absolute right-3 top-3 whitespace-nowrap rounded-full border border-white/[0.05] bg-black/45 px-3 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.15em] text-white/80 backdrop-blur-xl sm:right-4 sm:top-4 sm:text-[0.62rem]">
+          После (Глубокая полировка)
+        </span>
       </span>
 
-      <section
-        aria-hidden="true"
-        className="comparison-mask absolute inset-0 will-change-[clip-path]"
-        style={{ "--clip-right": `${100 - sliderPosition}%` }}
+      <span
+        className="absolute inset-y-0 left-0 overflow-hidden will-change-[width]"
+        style={{ width: `${sliderPosition}%` }}
       >
         <img
           src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1200&q=80"
@@ -157,29 +167,28 @@ function ComparisonSlider() {
           width="1200"
           height="900"
           loading="lazy"
-          className="h-full w-full object-cover"
+          draggable="false"
+          className="absolute inset-y-0 left-0 h-full max-w-none object-cover"
+          style={{
+            width: containerWidth ? `${containerWidth}px` : "100%",
+            filter: "sepia(0.75) saturate(1.7) contrast(0.8) brightness(0.7) blur(1.5px)",
+          }}
         />
-        <motion.span
-          aria-hidden="true"
-          className="absolute -inset-y-1/2 left-0 w-1/5 rotate-[18deg] bg-gradient-to-r from-transparent via-white/25 to-transparent blur-xl"
-          initial={{ x: "-180%" }}
-          animate={reduceMotion ? undefined : { x: ["-180%", "680%"] }}
-          transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 2.4, ease: [0.4, 0, 0.2, 1] }}
-        />
-        <span className="absolute right-3 top-3 whitespace-nowrap rounded-full border border-white/10 bg-black/45 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-white/85 backdrop-blur-xl sm:right-4 sm:top-4 sm:text-[0.65rem]">
-          После (Глубокая полировка)
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-r from-amber-950/30 via-yellow-900/15 to-transparent mix-blend-color-burn" />
+        <span className="absolute left-3 top-3 whitespace-nowrap rounded-full border border-amber-100/[0.06] bg-[#17130d]/55 px-3 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.15em] text-amber-50/75 backdrop-blur-xl sm:left-4 sm:top-4 sm:text-[0.62rem]">
+          До (Мутная, жёлтая фара)
         </span>
-      </section>
+      </span>
 
       <span
         aria-hidden="true"
-        className="absolute inset-y-0 w-px bg-white shadow-[0_0_24px_rgba(255,255,255,0.5)]"
+        className="pointer-events-none absolute inset-y-0 w-px bg-[#C5A880] shadow-[0_0_16px_rgba(197,168,128,0.35)] will-change-[left]"
         style={{ left: `${sliderPosition}%` }}
       >
-        <span className="absolute left-1/2 top-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-[#171714]/90 shadow-xl backdrop-blur-xl">
-          <span className="flex items-center gap-1 text-[#C5A880]">
-            <span>‹</span>
-            <span>›</span>
+        <span className="absolute left-1/2 top-1/2 grid size-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#C5A880]/40 bg-[#121210]/90 shadow-[0_10px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+          <span className="relative h-3.5 w-3.5">
+            <span className="absolute left-0 top-1/2 h-px w-1.5 -translate-y-1/2 bg-[#C5A880]" />
+            <span className="absolute right-0 top-1/2 h-px w-1.5 -translate-y-1/2 bg-[#C5A880]" />
           </span>
         </span>
       </span>
@@ -189,24 +198,9 @@ function ComparisonSlider() {
 
 export default function Home() {
   const reduceMotion = useReducedMotion();
-  const blobTransition = reduceMotion
-    ? { duration: 0 }
-    : { duration: 18, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" };
 
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden bg-[#0F0F0E]">
-      <motion.span
-        aria-hidden="true"
-        className="pointer-events-none absolute left-[10%] top-[-10%] size-[34rem] rounded-full bg-[#C5A880] opacity-10 blur-[150px]"
-        animate={reduceMotion ? undefined : { x: [0, 80, -30], y: [0, 60, 20], scale: [1, 1.12, 0.96] }}
-        transition={blobTransition}
-      />
-      <motion.span
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[20%] right-[10%] size-[30rem] rounded-full bg-[#4B5563] opacity-[0.08] blur-[150px]"
-        animate={reduceMotion ? undefined : { x: [0, -70, 25], y: [0, -40, 35], scale: [1, 0.92, 1.08] }}
-        transition={{ ...blobTransition, duration: 22 }}
-      />
+    <main className="main-canvas relative min-h-[100dvh] overflow-hidden bg-[#0F0F0E]">
 
       <header className="section-shell relative z-20 flex items-center justify-between py-6">
         <a href="#hero" className="text-lg font-black tracking-[0.24em] text-white" aria-label="KONTUR — на главную">
@@ -217,7 +211,7 @@ export default function Home() {
           <a href="#result" className="transition-colors duration-300 ease-out hover:text-white">Результат</a>
           <a href="#process" className="transition-colors duration-300 ease-out hover:text-white">Подход</a>
         </nav>
-        <ActionLink href="#contact" className="border border-white/10 bg-white/[0.04] px-4 hover:border-[#C5A880]/50 hover:bg-[#C5A880]/10">
+        <ActionLink href="#contact" className="border border-white/[0.05] bg-white/[0.03] px-4 hover:border-[#C5A880]/40 hover:bg-[#C5A880]/10">
           Записаться
         </ActionLink>
       </header>
@@ -226,23 +220,23 @@ export default function Home() {
         <article className="max-w-3xl">
           <p className="eyebrow mb-6">Студия детейлинга · Москва</p>
           <h1 className="text-balance text-[clamp(3rem,8vw,6.8rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-white">
-            KONTUR. Эстетика кузова и&nbsp;совершенство деталей.
+            Сохраняем заводской характер автомобиля.
           </h1>
           <p className="mt-8 max-w-2xl text-pretty text-base leading-7 text-[#A1A1AA] md:text-lg md:leading-8">
-            Студия детейлинга для тех, кто ценит безупречное состояние своего автомобиля. Профессиональная защита, реставрация и&nbsp;индивидуальный уход в&nbsp;Москве.
+            Исправляем дефекты лака, защищаем кузов и&nbsp;возвращаем салону исходную фактуру. Работаем точно: от&nbsp;замера толщины покрытия до&nbsp;финальной приёмки под проявочным светом.
           </p>
           <footer className="mt-10 flex flex-col gap-3 sm:flex-row">
             <ActionLink href="#contact" className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.22)] hover:bg-[#D0B893]">
               Рассчитать стоимость <ArrowIcon />
             </ActionLink>
-            <ActionLink href="#result" className="border border-white/10 bg-white/[0.03] text-zinc-200 hover:border-white/20 hover:bg-white/[0.07]">
-              Посмотреть результат
+            <ActionLink href="#result" className="border border-white/[0.05] bg-white/[0.02] text-zinc-200 hover:border-white/15 hover:bg-white/[0.06]">
+              Проверить работу
             </ActionLink>
           </footer>
         </article>
 
         <figure className="relative mx-auto w-full max-w-xl lg:ml-auto">
-          <span aria-hidden="true" className="absolute -inset-3 rounded-[28px] border border-[#C5A880]/10" />
+          <span aria-hidden="true" className="absolute -inset-3 rounded-[28px] border border-white/[0.05]" />
           <img
             src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=86"
             alt="Спортивный автомобиль в студии KONTUR"
@@ -252,22 +246,22 @@ export default function Home() {
             className="aspect-[4/5] w-full rounded-[24px] object-cover object-center shadow-[0_36px_120px_rgba(0,0,0,0.55)]"
           />
           <figcaption className="glass absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl px-5 py-4 text-sm">
-            <span className="text-zinc-400">Контроль качества</span>
-            <strong className="font-medium text-[#C5A880]">Под направленным светом</strong>
+            <span className="text-zinc-400">Финишная инспекция</span>
+            <strong className="font-medium text-[#C5A880]">Два спектра света</strong>
           </figcaption>
         </figure>
       </section>
 
-      <section aria-label="Показатели студии" className="section-shell relative z-10 grid grid-cols-2 border-y border-white/[0.07] py-8 md:grid-cols-4">
+      <section aria-label="Показатели студии" className="section-shell relative z-10 grid grid-cols-2 justify-items-center border-y border-white/[0.05] py-8 md:grid-cols-4">
         {[
-          ["7+", "лет практики"],
-          ["1 200+", "автомобилей"],
-          ["9H", "твёрдость керамики"],
-          ["3 года", "гарантии"],
+          ["7+", "лет работы"],
+          ["1 200+", "кузовов принято"],
+          ["9H", "твёрдость защиты"],
+          ["3 года", "гарантия на состав"],
         ].map(([value, label]) => (
-          <article key={label} className="flex flex-col items-center justify-center border-white/[0.07] px-3 py-4 text-center even:border-l md:border-l md:first:border-l-0">
-            <strong className="block text-center text-2xl font-semibold tracking-tight text-white md:text-3xl">{value}</strong>
-            <span className="mt-1 block text-center text-xs text-zinc-500">{label}</span>
+          <article key={label} className="flex w-full flex-col items-center justify-center border-white/[0.05] px-3 py-5 text-center even:border-l md:border-l md:first:border-l-0">
+            <strong className="block text-center text-2xl font-semibold tracking-[0.04em] text-white md:text-3xl">{value}</strong>
+            <span className="mt-2 block text-center text-[0.62rem] uppercase tracking-[0.15em] text-zinc-500">{label}</span>
           </article>
         ))}
       </section>
@@ -275,32 +269,32 @@ export default function Home() {
       <section id="services" className="relative z-10 py-28 md:py-40">
         <header className="section-shell mb-12 grid gap-6 md:grid-cols-2 md:items-end">
           <article>
-            <p className="eyebrow mb-4">Экспертиза</p>
-            <h2 className="max-w-xl text-4xl font-semibold leading-tight tracking-[-0.045em] text-white md:text-6xl">
-              Технологии ухода без компромиссов.
+            <p className="eyebrow mb-4">Работа по материалу</p>
+            <h2 className="max-w-xl text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+              Четыре точных дисциплины.
             </h2>
           </article>
           <p className="max-w-lg text-base leading-7 text-zinc-400 md:justify-self-end">
-            Подбираем процедуру после диагностики покрытия. Работаем только с&nbsp;проверенными составами и&nbsp;соблюдаем регламенты производителей.
+            Не продаём пакет до&nbsp;осмотра. Сначала определяем толщину лака, состояние пластика и&nbsp;историю ремонта — затем собираем технологию под конкретный автомобиль.
           </p>
         </header>
 
-        <section className="services-track scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-4">
-          {services.map((service) => (
+        <section className="services-track scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
+          {services.map((service, index) => (
             <motion.article
               key={service.number}
               whileHover={reduceMotion ? undefined : { y: -6 }}
               whileTap={{ scale: 0.97 }}
               transition={spring}
-              className="service-card glass flex min-h-[22rem] snap-center flex-col rounded-[24px] p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-[#C5A880]/30 hover:bg-[#191816]"
+              className={`service-card glass flex min-h-[22rem] snap-center flex-col rounded-[24px] p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-[#C5A880]/25 hover:bg-[#191816] md:p-8 ${index === 0 ? "lg:col-span-2 lg:min-h-[28rem]" : ""} ${index === 3 ? "lg:col-span-2" : ""}`}
             >
               <header className="flex items-center justify-between">
                 <span className="font-mono text-xs text-[#C5A880]">{service.number}</span>
                 <span className="size-1.5 rounded-full bg-[#C5A880]" />
               </header>
-              <h3 className="mt-auto text-2xl font-medium leading-tight tracking-[-0.025em] text-white">{service.title}</h3>
+              <h3 className={`mt-auto font-medium uppercase leading-tight tracking-[0.06em] text-[#E8E0D5] ${index === 0 ? "max-w-xl text-3xl md:text-4xl" : "text-xl md:text-2xl"}`}>{service.title}</h3>
               <p className="mt-4 text-sm leading-6 text-zinc-400">{service.text}</p>
-              <footer className="mt-7 border-t border-white/[0.07] pt-4 text-xs font-medium text-zinc-300">{service.meta}</footer>
+              <footer className="mt-7 border-t border-white/[0.05] pt-4 text-xs font-medium text-zinc-300">{service.meta}</footer>
             </motion.article>
           ))}
         </section>
@@ -308,12 +302,12 @@ export default function Home() {
 
       <section id="result" className="section-shell relative z-10 py-24 md:py-36">
         <header className="mb-12 max-w-3xl">
-          <p className="eyebrow mb-4">До / После</p>
-          <h2 className="text-balance text-4xl font-semibold leading-tight tracking-[-0.045em] text-white md:text-6xl">
-            Сила в&nbsp;деталях. Взгляните на&nbsp;разницу.
+          <p className="eyebrow mb-4">Оптика · реставрация</p>
+          <h2 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+            Прозрачность возвращается слоями.
           </h2>
           <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400">
-            Перемещайте разделитель: слева — исходное состояние, справа — восстановленная глубина и&nbsp;чистота поверхности.
+            Снимаем разрушенный ультрафиолетом слой, выстраиваем поверхность несколькими градациями абразива и&nbsp;закрываем оптику защитным составом. Потяните бронзовый маркер.
           </p>
         </header>
         <ComparisonSlider />
@@ -321,12 +315,12 @@ export default function Home() {
 
       <section id="process" className="section-shell relative z-10 py-28 md:py-40">
         <header className="mb-14 md:max-w-2xl">
-          <p className="eyebrow mb-4">Стандарт KONTUR</p>
-          <h2 className="text-4xl font-semibold tracking-[-0.045em] text-white md:text-6xl">Прозрачный процесс. Измеримый результат.</h2>
+          <p className="eyebrow mb-4">Протокол KONTUR</p>
+          <h2 className="text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">Каждый проход имеет причину.</h2>
         </header>
-        <section className="grid border-t border-white/10 md:grid-cols-2">
+        <section className="grid border-t border-white/[0.05] md:grid-cols-2">
           {processSteps.map(([title, text], index) => (
-            <article key={title} className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/10 py-8 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r">
+            <article key={title} className="grid grid-cols-[2.5rem_1fr] gap-4 border-b border-white/[0.05] py-8 md:p-10 md:first:border-r md:[&:nth-child(3)]:border-r">
               <span className="font-mono text-xs text-[#C5A880]">0{index + 1}</span>
               <section>
                 <h3 className="text-xl font-medium text-white">{title}</h3>
@@ -338,33 +332,32 @@ export default function Home() {
       </section>
 
       <section id="contact" className="section-shell relative z-10 pb-36 pt-20 md:pb-44">
-        <article className="relative overflow-hidden rounded-[24px] border border-[#C5A880]/20 bg-[#171612] px-6 py-14 shadow-[0_32px_100px_rgba(0,0,0,0.35)] md:px-14 md:py-20">
-          <span aria-hidden="true" className="absolute -right-20 -top-28 size-80 rounded-full bg-[#C5A880]/10 blur-[100px]" />
-          <p className="eyebrow mb-5">Предварительная запись</p>
-          <h2 className="relative max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-[-0.05em] text-white md:text-6xl">
-            Узнайте, какая защита нужна вашему автомобилю.
+        <article className="relative overflow-hidden rounded-[24px] border border-white/[0.05] bg-[radial-gradient(circle_at_85%_10%,rgba(197,168,128,0.09),transparent_32%),#171612] px-6 py-14 shadow-[0_24px_70px_rgba(0,0,0,0.2)] md:px-14 md:py-20">
+          <p className="eyebrow mb-5">Разбор задачи</p>
+          <h2 className="relative max-w-4xl text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.04em] text-[#E8E0D5] md:text-5xl">
+            Сначала смотрим автомобиль. Потом называем цену.
           </h2>
           <p className="relative mt-6 max-w-2xl text-base leading-7 text-zinc-400">
-            Укажите марку, модель, год выпуска и&nbsp;желаемый результат. Мастер подготовит предварительный расчёт и&nbsp;предложит время диагностики.
+            Напишите марку, модель и&nbsp;что именно вас беспокоит. По фотографиям обозначим диапазон стоимости, а&nbsp;окончательную технологию зафиксируем после очной диагностики.
           </p>
           <footer className="relative mt-10 flex flex-col gap-3 sm:flex-row">
             <ActionLink
               href="mailto:hello@kontur-detailing.ru?subject=Запись%20на%20диагностику%20KONTUR"
               className="gap-3 bg-[#C5A880] text-[#11110F] shadow-[0_12px_40px_rgba(197,168,128,0.2)] hover:bg-[#D0B893]"
             >
-              Записаться на диагностику <ArrowIcon />
+              Отправить задачу мастеру <ArrowIcon />
             </ActionLink>
-            <ActionLink href="#services" className="border border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.07]">
-              Сверить услуги
+            <ActionLink href="#services" className="border border-white/[0.05] bg-white/[0.03] hover:border-white/15 hover:bg-white/[0.07]">
+              Изучить направления
             </ActionLink>
           </footer>
         </article>
       </section>
 
-      <footer className="section-shell relative z-10 grid gap-10 border-t border-white/10 pb-32 pt-10 text-sm text-zinc-500 md:grid-cols-[1.4fr_1fr_1fr] md:pb-12">
+      <footer className="section-shell relative z-10 grid gap-10 border-t border-white/[0.05] pb-32 pt-10 text-sm text-zinc-500 md:grid-cols-[1.4fr_1fr_1fr] md:pb-12">
         <section>
           <strong className="text-base font-black tracking-[0.24em] text-white">KONTUR</strong>
-          <p className="mt-4 max-w-sm leading-6">Профессиональный детейлинг, защита и&nbsp;реставрация автомобилей в&nbsp;Москве.</p>
+          <p className="mt-4 max-w-sm leading-6">Полировка, защита кузова и&nbsp;реставрация салона с&nbsp;контролем материала на каждом этапе.</p>
         </section>
         <nav aria-label="Навигация в подвале" className="flex flex-col items-start gap-3">
           <a href="#services" className="hover:text-white">Услуги</a>
