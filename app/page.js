@@ -98,6 +98,37 @@ function AnimatedHeading({ children, className, level = 2 }) {
   );
 }
 
+function EditorialManifesto() {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <section className="section-shell relative z-10 grid gap-8 py-14 md:grid-cols-[0.8fr_1.2fr] md:gap-16 md:py-32">
+      <header>
+        <p className="eyebrow mb-4">Позиция мастерской</p>
+        <span className="block font-mono text-xs uppercase tracking-[0.18em] text-zinc-600">
+          Москва · 55.7558° N
+        </span>
+      </header>
+
+      <article>
+        <AnimatedHeading className="max-w-4xl text-4xl font-semibold uppercase leading-[1.05] tracking-[0.035em] text-[var(--heading)] md:text-6xl">
+          Не маскируем дефекты. Исправляем причину.
+        </AnimatedHeading>
+        <motion.blockquote
+          initial={reduceMotion ? false : { opacity: 0, x: 28 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.45 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 border-l border-[var(--accent)] pl-5 text-base leading-7 text-zinc-400 md:ml-auto md:max-w-xl"
+        >
+          Блеск — не самостоятельная цель. Важно сохранить толщину лака, исходную фактуру кожи
+          и&nbsp;точную геометрию каждой поверхности.
+        </motion.blockquote>
+      </article>
+    </section>
+  );
+}
+
 function ActionLink({ href, children, className = "", ariaLabel }) {
   return (
     <motion.a
@@ -224,7 +255,14 @@ export default function Home() {
       </header>
 
       <section id="hero" className="section-shell relative z-10 grid items-center gap-8 pb-14 pt-8 md:min-h-[calc(100dvh-96px)] md:gap-12 md:pb-24 md:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
-        <article className="max-w-3xl">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-[6vw] top-[8%] z-0 hidden text-[16vw] font-black leading-none tracking-[-0.08em] text-white/[0.018] lg:block"
+        >
+          KONTUR
+        </span>
+
+        <article className="relative z-10 max-w-3xl">
           <p className="eyebrow mb-4 md:mb-6">Студия детейлинга · Москва</p>
           <AnimatedHeading
             level={1}
@@ -248,23 +286,45 @@ export default function Home() {
               Проверить работу
             </ActionLink>
           </footer>
+
+          <dl className="mt-9 grid grid-cols-3 border-t border-white/[0.05] pt-5 md:mt-12">
+            {[
+              ["ЛКП", "замер"],
+              ["Свет", "2 спектра"],
+              ["Выдача", "с мастером"],
+            ].map(([term, detail]) => (
+              <div key={term} className="border-white/[0.05] pr-3 [&:not(:first-child)]:border-l [&:not(:first-child)]:pl-4">
+                <dt className="text-[0.6rem] uppercase tracking-[0.18em] text-[var(--accent)]">{term}</dt>
+                <dd className="mt-1 text-xs text-zinc-500">{detail}</dd>
+              </div>
+            ))}
+          </dl>
         </article>
 
-        <figure className="relative mx-auto w-full max-w-xl lg:ml-auto">
+        <motion.figure
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.96, x: 28 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 mx-auto w-full max-w-xl lg:ml-auto"
+        >
           <span aria-hidden="true" className="absolute -inset-3 rounded-[28px] border border-white/[0.05]" />
+          <span className="absolute left-4 top-4 z-20 rounded-full border border-white/[0.06] bg-[#080C0E]/60 px-3 py-2 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-zinc-300 backdrop-blur-xl">
+            Контроль поверхности · 01
+          </span>
           <img
             src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=86"
             alt="Спортивный автомобиль в студии KONTUR"
             width="1200"
             height="1500"
             fetchPriority="high"
-            className="aspect-[4/5] w-full rounded-[24px] object-cover object-center shadow-[0_36px_120px_rgba(0,0,0,0.55)]"
+            className="hero-image aspect-[4/5] w-full rounded-[24px] object-cover object-center shadow-[0_36px_120px_rgba(0,0,0,0.55)]"
           />
+          <span aria-hidden="true" className="inspection-scan absolute inset-x-4 top-1/4 z-10 h-px bg-[var(--accent)]/70 shadow-[0_0_18px_rgba(184,92,74,0.75)]" />
           <figcaption className="glass absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl px-5 py-4 text-sm">
             <span className="text-zinc-400">Финишная инспекция</span>
             <strong className="font-medium text-[var(--accent)]">Два спектра света</strong>
           </figcaption>
-        </figure>
+        </motion.figure>
       </section>
 
       <section aria-label="Показатели студии" className="section-shell relative z-10 grid grid-cols-2 justify-items-center border-y border-white/[0.05] py-4 md:grid-cols-4 md:py-8">
@@ -280,6 +340,8 @@ export default function Home() {
           </article>
         ))}
       </section>
+
+      <EditorialManifesto />
 
       <section id="services" className="relative z-10 py-16 md:py-40">
         <header className="section-shell mb-8 grid gap-4 md:mb-12 md:grid-cols-2 md:items-end md:gap-6">

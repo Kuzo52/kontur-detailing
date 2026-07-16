@@ -117,6 +117,44 @@ img {
   }
 }
 
+.hero-image {
+  animation: hero-breathe 14s var(--ease-premium) infinite alternate;
+  will-change: transform;
+}
+
+.inspection-scan {
+  animation: inspection-pass 7s var(--ease-premium) infinite alternate;
+  pointer-events: none;
+  will-change: top, opacity;
+}
+
+@keyframes hero-breathe {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes inspection-pass {
+  0% {
+    top: 22%;
+    opacity: 0.25;
+  }
+
+  45%,
+  65% {
+    opacity: 0.8;
+  }
+
+  100% {
+    top: 72%;
+    opacity: 0.2;
+  }
+}
+
 .service-card {
   min-width: min(82vw, 21rem);
 }
